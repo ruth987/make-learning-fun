@@ -1,9 +1,10 @@
 import React from 'react'
+import FlashcardBuilder from '../components/Study/FlashcardBuilder'
 
 const StudyPage = () => {
   return (
     <div>
-      This is the study page
+      <FlashcardBuilder />
     </div>
   )
 }

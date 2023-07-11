@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { MailIcon, UserIcon, LockClosedIcon } from '@heroicons/react/solid';
 import googleLogo from '../assets/google-logo.svg';
+import { auth, registerWithEmailAndPassword, signInWithGoogle } from '../firebase';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { useHistory } from 'react-router-dom';
 
 type FormData = {
   email: string;
@@ -12,11 +15,27 @@ type FormData = {
 const SignupPage: React.FC = () => {
   const { register, handleSubmit } = useForm<FormData>();
   const [isLoading, setIsLoading] = useState(false);
+  const [user, loading, error] = useAuthState(auth);
+  const history = useHistory();
+
+  useEffect(() => {
+    if (loading) {
+      // maybe trigger a loading screen
+      return;
+    }
+    if (user) history.replace('/');
+  }, [user, loading]);
+
 
   const onSubmit = async (data: FormData) => {
     setIsLoading(true);
-    // Process the signup form data here
-    console.log(data);
+    try {
+      await registerWithEmailAndPassword(data.email, data.password, data.username);
+      history.replace('/');
+    }
+    catch (error) {
+      console.log(error);
+    }
     setIsLoading(false);
   };
 
@@ -72,6 +91,7 @@ const SignupPage: React.FC = () => {
           <button
             type="button"
             className="flex items-center justify-center gap-2 px-4 py-2 mt-2 w-full rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-300"
+            onClick={signInWithGoogle}
           >
             <img src={googleLogo} alt="Google" className="w-5 h-5" />
             <span>Google</span>

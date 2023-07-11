@@ -113,7 +113,7 @@ const FlashcardBuilder: React.FC = () => {
                 <option value="">Select a category</option>
                 {categories.map((category) => (
                   <option key={category.title} value={category.title}>
-                    {category.title}
+                    {category.title}flashcardbuilder
                   </option>
                 ))}
               </select>

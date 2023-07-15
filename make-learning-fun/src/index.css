@@ -10,4 +10,8 @@
     background-size: contain;
     background-position: center;
   }
-  
+  .login-container {
+    background-image: url('./assets/enter.svg');
+    background-repeat: no-repeat;
+    background-size: cover;
+  }

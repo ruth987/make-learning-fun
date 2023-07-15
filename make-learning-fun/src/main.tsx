@@ -6,6 +6,7 @@ import StudyPage from './pages/StudyPage.tsx'
 import HomePage from './pages/HomePage.tsx';
 import SignupPage from './pages/SignupPage.tsx';
 import LoginPage from './pages/LoginPage.tsx';
+import LoadingPage from './pages/LoadingPage.tsx';
 
 const router = createBrowserRouter([
   { 
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
   {
     path: "/loginpage",
     element: <LoginPage />,
+  },
+  {
+    path: "/loadingpage",
+    element: <LoadingPage />,
   }
 ])
 

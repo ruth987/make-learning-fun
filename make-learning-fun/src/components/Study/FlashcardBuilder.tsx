@@ -69,9 +69,9 @@ const FlashcardBuilder: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
+    <>
       <div className="flex-1 flex items-center justify-center">
-        <div className="bg-white p-8 rounded shadow-md w-2/3">
+        <div className="bg-white p-8 rounded shadow-md w-3/3">
           <h1 className="text-2xl mb-4">Flashcard Builder</h1>
           <div className="w-full">
             <label htmlFor="question" className="block mb-2">
@@ -99,8 +99,8 @@ const FlashcardBuilder: React.FC = () => {
               placeholder="Enter the answer"
             />
           </div>
-          <div className="w-full mt-4 flex flex-col sm:flex-row sm:items-center">
-            <div className="w-full sm:w-1/2">
+          <div className="w-full mt-4  flex-row items-center">
+            <div className="">
               <label htmlFor="category" className="mr-2">
                 Category
               </label>
@@ -108,22 +108,22 @@ const FlashcardBuilder: React.FC = () => {
                 id="category"
                 value={selectedCategory}
                 onChange={handleCategoryChange}
-                className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-300"
+                className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:border-purple-300"
               >
                 <option value="">Select a category</option>
                 {categories.map((category) => (
                   <option key={category.title} value={category.title}>
-                    {category.title}flashcardbuilder
+                    {category.title}
                   </option>
                 ))}
               </select>
             </div>
-            <div className="w-full sm:w-1/2 mt-4 sm:mt-0">
+            <div className="mt-5">
               <input
                 type="text"
                 value={newCategory}
                 onChange={handleNewCategoryChange}
-                className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-300"
+                className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:border-purple-300"
                 placeholder="New Category"
               />
             </div>
@@ -131,7 +131,7 @@ const FlashcardBuilder: React.FC = () => {
           <div className="flex justify-end mt-4">
             <button
               onClick={handleAddFlashcard}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
+              className="px-4 py-2 bg-purple-700 text-white rounded hover:bg-purple-800 focus:outline-none focus:ring focus:border-purple-300"
             >
               Add Flashcard
             </button>
@@ -151,7 +151,7 @@ const FlashcardBuilder: React.FC = () => {
           </div>
         ))}
       </div>
-    </div>
+      </>
   );
 };
 

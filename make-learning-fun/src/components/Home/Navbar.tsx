@@ -1,5 +1,6 @@
 import React from 'react';
 import profilepicture from '../../assets/profilepicture.png';
+import logo from '../../assets/logo.svg';
 
 const Navbar: React.FC = () => {
   return (
@@ -7,8 +8,8 @@ const Navbar: React.FC = () => {
 <nav className="bg-white border-gray-200 dark:bg-gray-900 shadow-md">
   <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
   <a href="https://flowbite.com/" className="flex items-center">
-      <img src="https://flowbite.com/docs/images/logo.svg" className="h-8 mr-3" alt="Flowbite Logo" />
-      <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Flowbite</span>
+      <img src={logo} className="h-8 mr-0" alt="Flowbite Logo" />
+      <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">akeLearningFun</span>
   </a>
   <div className="flex items-center md:order-2">
       <button type="button" className="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">

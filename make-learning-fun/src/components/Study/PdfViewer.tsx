@@ -1,8 +1,10 @@
 import React, { ChangeEvent, useRef, useState } from 'react';
+import FlashcardBuilder from './FlashcardBuilder';
 
 const PdfViewer: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showFlashcardBuilder, setShowFlashcardBuilder] = useState(false);
+  const [flashcardBuilderWidth, setFlashcardBuilderWidth] = useState(0);
 
   const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -21,11 +23,21 @@ const PdfViewer: React.FC = () => {
     setShowFlashcardBuilder(!showFlashcardBuilder);
   };
 
+  const closeFlashcardBuilder = () => {
+    setShowFlashcardBuilder(false);
+  };
+
+  const handleFlashcardBuilderResize = (width: number) => {
+    setFlashcardBuilderWidth(width);
+  };
+
+  const pdfViewerWidth = `calc(100% - ${flashcardBuilderWidth}px)`;
+
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100 w-full">
       <h1 className="text-4xl font-bold mb-8">PDF Viewer</h1>
       <div className="flex w-full justify-center items-center">
-        <div className="w-7/10 border border-gray-300 rounded-lg p-4">
+        <div className="w-7/10 border border-gray-300 rounded-lg p-4" style={{ width: pdfViewerWidth }}>
           {/* PDF viewer component */}
           {/* Use your preferred PDF library here */}
         </div>
@@ -39,7 +51,7 @@ const PdfViewer: React.FC = () => {
             </button>
           </div>
           <div className="flex justify-end">
-            <div className="fixed bottom-4 right-4">
+            <div className="fixed top-4 right-4">
               <button
                 className="bg-purple-800 hover:bg-purple-900 text-white rounded-full w-12 h-12 flex items-center justify-center"
                 onClick={toggleFlashcardBuilder}
@@ -68,16 +80,16 @@ const PdfViewer: React.FC = () => {
             ref={fileInputRef}
             onChange={handleFileSelect}
           />
-          {showFlashcardBuilder && <FlashcardBuilder />}
+          {showFlashcardBuilder && (
+            <FlashcardBuilder
+              onResize={handleFlashcardBuilderResize}
+              onClose={closeFlashcardBuilder}
+            />
+          )}
         </div>
       </div>
     </div>
   );
-};
-
-const FlashcardBuilder: React.FC = () => {
-  // Add your FlashcardBuilder component code here
-  return <div>Flashcard Builder Component</div>;
 };
 
 export default PdfViewer;

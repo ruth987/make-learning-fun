@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 type Flashcard = {
   question: string;
@@ -10,19 +10,34 @@ type Category = {
   flashcards: Flashcard[];
 };
 
-const FlashcardBuilder: React.FC = () => {
+type FlashcardBuilderProps = {
+  onResize: (width: number) => void;
+  onClose: () => void;
+};
+
+const FlashcardBuilder: React.FC<FlashcardBuilderProps> = ({ onResize, onClose }) => {
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
   const [newCategory, setNewCategory] = useState('');
+  const [builderWidth, setBuilderWidth] = useState(0);
+  const builderRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (builderRef.current) {
+      const width = builderRef.current.offsetWidth;
+      setBuilderWidth(width);
+      onResize(width);
+    }
+  }, [builderRef, onResize]);
 
   const handleQuestionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setQuestion(e.target.value);
   };
 
   const handleAnswerChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setAnswer(e.target.value);
+   setAnswer(e.target.value);
   };
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -34,124 +49,133 @@ const FlashcardBuilder: React.FC = () => {
   };
 
   const handleAddFlashcard = () => {
-    if (!question || !answer || (!selectedCategory && !newCategory)) {
+    if (!question || !answer || !selectedCategory) {
       return;
     }
 
-    const newFlashcard: Flashcard = {
-      question,
-      answer,
-    };
+    const newCategories = [...categories];
+    const categoryIndex = newCategories.findIndex(
+      (category) => category.title === selectedCategory
+    );
 
-    let updatedCategories = [...categories];
-
-    if (selectedCategory) {
-      const categoryIndex = updatedCategories.findIndex(
-        (category) => category.title === selectedCategory
-      );
-
-      if (categoryIndex !== -1) {
-        updatedCategories[categoryIndex].flashcards.push(newFlashcard);
-      }
-    } else if (newCategory) {
-      const newCategoryObj: Category = {
-        title: newCategory,
-        flashcards: [newFlashcard],
-      };
-      updatedCategories = [...updatedCategories, newCategoryObj];
-      setNewCategory('');
+    if (categoryIndex === -1) {
+      return;
     }
 
-    setCategories(updatedCategories);
+    newCategories[categoryIndex].flashcards.push({ question, answer });
+    setCategories(newCategories);
     setQuestion('');
     setAnswer('');
-    setSelectedCategory('');
+  };
+
+  const handleAddCategory = () => {
+    if (!newCategory) {
+      return;
+    }
+
+    const newCategories = [...categories, { title: newCategory, flashcards: [] }];
+    setCategories(newCategories);
+    setNewCategory('');
   };
 
   return (
-    <>
-      <div className="flex-1 flex items-center justify-center">
-        <div className="bg-white p-8 rounded shadow-md w-3/3">
-          <h1 className="text-2xl mb-4">Flashcard Builder</h1>
-          <div className="w-full">
-            <label htmlFor="question" className="block mb-2">
-              Question
-            </label>
-            <textarea
-              id="question"
-              value={question}
-              onChange={handleQuestionChange}
-              rows={4}
-              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-300"
-              placeholder="Enter the question"
-            />
-          </div>
-          <div className="w-full mt-4">
-            <label htmlFor="answer" className="block mb-2">
-              Answer
-            </label>
-            <textarea
-              id="answer"
-              value={answer}
-              onChange={handleAnswerChange}
-              rows={4}
-              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-300"
-              placeholder="Enter the answer"
-            />
-          </div>
-          <div className="w-full mt-4  flex-row items-center">
-            <div className="">
-              <label htmlFor="category" className="mr-2">
-                Category
-              </label>
-              <select
-                id="category"
-                value={selectedCategory}
-                onChange={handleCategoryChange}
-                className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:border-purple-300"
-              >
-                <option value="">Select a category</option>
-                {categories.map((category) => (
-                  <option key={category.title} value={category.title}>
-                    {category.title}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="mt-5">
-              <input
-                type="text"
-                value={newCategory}
-                onChange={handleNewCategoryChange}
-                className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:border-purple-300"
-                placeholder="New Category"
-              />
-            </div>
-          </div>
-          <div className="flex justify-end mt-4">
-            <button
-              onClick={handleAddFlashcard}
-              className="px-4 py-2 bg-purple-700 text-white rounded hover:bg-purple-800 focus:outline-none focus:ring focus:border-purple-300"
-            >
-              Add Flashcard
-            </button>
-          </div>
+    <div className="bg-white border border-gray-300 rounded-lg p-4" ref={builderRef}>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg font-bold">Flashcard Builder</h2>
+        <button
+          className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          onClick={onClose}
+        >
+          X
+        </button>
+      </div>
+      <div className="mb-4">
+        <label className="block text-gray-700 font-bold mb-2" htmlFor="question">
+          Question
+        </label>
+        <textarea
+          id="question"
+          className="w-full border border-gray-300 rounded-lg p-2"
+          rows={2}
+          value={question}
+          onChange={handleQuestionChange}
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-gray-700 font-bold mb-2" htmlFor="answer">
+          Answer
+        </label>
+        <textarea
+          id="answer"
+          className="w-full border border-gray-300 rounded-lg p-2"
+          rows={2}
+          value={answer}
+          onChange={handleAnswerChange}
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-gray-700 font-bold mb-2" htmlFor="category">
+          Category
+        </label>
+        <select
+          id="category"
+          className="w-full border border-gray-300 rounded-lg p-2"
+          value={selectedCategory}
+          onChange={handleCategoryChange}
+        >
+          <option value="">Select a category</option>
+          {categories.map((category) => (
+            <option key={category.title} value={category.title}>
+              {category.title}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="mb-4">
+        <button
+          className="bg-purple-800 hover:bg-purple-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          onClick={handleAddFlashcard}
+        >
+          Add Flashcard
+        </button>
+      </div>
+      <hr className="my-4" />
+      <div className="mb-4">
+        <label className="block text-gray-700 font-bold mb-2" htmlFor="new-category">
+          New Category
+        </label>
+        <div className="flex">
+          <input
+            id="new-category"
+            className="flex-1 border border-gray-300 rounded-l-lg p-2"
+            type="text"
+            value={newCategory}
+            onChange={handleNewCategoryChange}
+          />
+          <button
+            className="bg-purple-800 hover:bg-purple-900 text-white font-bold py-2 px-4 rounded-r-lg focus:outline-none focus:shadow-outline"
+            onClick={handleAddCategory}
+          >
+            Add Category
+          </button>
         </div>
       </div>
-      <div className="flex-1 bg-white p-8 overflow-y-auto">
+      <div>
         {categories.map((category) => (
           <div key={category.title} className="mb-4">
-            <h2 className="text-lg font-semibold">{category.title}</h2>
-            {category.flashcards.map((flashcard, index) => (
-              <div key={index} className="bg-white p-4 rounded shadow mt-2">
-                <p className="font-medium">{flashcard.question}</p>
-                <p className="text-gray-500">{flashcard.answer}</p>
-              </div>
-            ))}
+            <h3 className="font-bold">{category.title}</h3>
+            <ul>
+              {category.flashcards.map((flashcard, index) => (
+                <li key={index}>
+                  <p className="font-bold">{flashcard.question}</p>
+                  <p>{flashcard.answer}</p>
+                </li>
+              ))}
+            </ul>
           </div>
         ))}
       </div>
-      </>
+    </div>
   );
 };
 

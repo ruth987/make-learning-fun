@@ -1,19 +1,52 @@
 import React, { ChangeEvent, useRef, useState } from 'react';
 import FlashcardBuilder from './FlashcardBuilder';
 
+import { Viewer, Worker} from '@react-pdf-viewer/core'
+import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout'
+import '@react-pdf-viewer/core/lib/styles/index.css'
+import '@react-pdf-viewer/default-layout/lib/styles/index.css'
+
+
+
 const PdfViewer: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showFlashcardBuilder, setShowFlashcardBuilder] = useState(false);
   const [flashcardBuilderWidth, setFlashcardBuilderWidth] = useState(0);
+  const [pdfFile, setPDFFile] = useState(null)
+  const [viewPdf, setViewPdf] = useState(null)
 
-  const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      // Handle the selected file
-      // You can use a PDF library like pdf.js to display the PDF content
-      console.log('Selected file:', file);
+  const fileType = ['application/pdf']
+
+  const handleChange = (e) => {
+    let selectedFile = e.target.files [0]
+      if(selectedFile) {
+        if(selectedFile && fileType.includes (selectedFile.type)) {
+          let reader = new FileReader()
+          reader.readAsDataURL (selectedFile)
+          reader.onload = (e) => {
+          setPDFFile(e.target.result)
+        }
+        }
+        else {
+          setPDFFile(null)
+        }
+      }
+      else {
+        console.log('select your file')
+      }
+  }
+  const handleSubmit = (e) => {
+      e.preventDefault()
+      if(pdfFile !== null) {
+        setViewPdf (pdfFile)
+      }
+      else {
+        setViewPdf (null)
+      }
     }
-  };
+    const newplugin = defaultLayoutPlugin();
+
+
 
   const openFileSelector = () => {
     fileInputRef.current?.click();
@@ -38,17 +71,23 @@ const PdfViewer: React.FC = () => {
       <h1 className="text-4xl font-bold mb-8">PDF Viewer</h1>
       <div className="flex w-full justify-center items-center">
         <div className="w-7/10 border border-gray-300 rounded-lg p-4" style={{ width: pdfViewerWidth }}>
-          {/* PDF viewer component */}
-          {/* Use your preferred PDF library here */}
+        <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+          {viewPdf && <>
+          <Viewer fileUrl={viewPdf} plugins={[newplugin]}/>
+          </>}
+          {!viewPdf && <>No PDF</>}
+        </Worker>
         </div>
+
         <div className="w-3/10 ml-4">
           <div className="flex justify-center">
-            <button
+            <form onSubmit={handleSubmit}>
+              <input type="file" onChange={handleChange} />
+              <button type="submit"
               className="bg-purple-800 hover:bg-purple-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline items-center"
-              onClick={openFileSelector}
-            >
-              Select File
-            </button>
+              >View PDF</button>
+            </form>
+
           </div>
           <div className="flex justify-end">
             <div className="fixed top-4 right-4">
@@ -73,13 +112,7 @@ const PdfViewer: React.FC = () => {
               </button>
             </div>
           </div>
-          <input
-            type="file"
-            accept=".pdf"
-            className="hidden"
-            ref={fileInputRef}
-            onChange={handleFileSelect}
-          />
+
           {showFlashcardBuilder && (
             <FlashcardBuilder
               onResize={handleFlashcardBuilderResize}

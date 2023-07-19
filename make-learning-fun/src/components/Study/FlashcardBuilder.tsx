@@ -82,12 +82,6 @@ const FlashcardBuilder: React.FC<FlashcardBuilderProps> = ({ onResize, onClose }
     <div className="bg-white border border-gray-300 rounded-lg p-4" ref={builderRef}>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-bold">Flashcard Builder</h2>
-        <button
-          className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          onClick={onClose}
-        >
-          X
-        </button>
       </div>
       <div className="mb-4">
         <label className="block text-gray-700 font-bold mb-2" htmlFor="question">

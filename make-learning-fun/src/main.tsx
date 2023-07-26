@@ -7,6 +7,7 @@ import HomePage from './pages/HomePage.tsx';
 import SignupPage from './pages/SignupPage.tsx';
 import LoginPage from './pages/LoginPage.tsx';
 import LoadingPage from './pages/LoadingPage.tsx';
+import DisplayFlashcards from './components/firebase/DisplayFlashcards.tsx';
 
 const router = createBrowserRouter([
   { 
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
   {
     path: "/loadingpage",
     element: <LoadingPage />,
+  },
+  {
+    path : "/displayflashcards",
+    element: <DisplayFlashcards userId='SuipCIUgW6ZqjBImBKtAlb4pcqz1' category={undefined} />,
   }
 ])
 

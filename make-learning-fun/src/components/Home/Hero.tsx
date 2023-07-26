@@ -10,7 +10,7 @@ const Hero: React.FC = () => {
     <div className=" py-80 flex flex-col items-center justify-center bg-cover bg-center bg-svg-image h-screen">
       <h1 className="text-4xl font-bold  mb-8 text-center font-mono text-purple-950">Unleash Your Curiosity and Embrace Fun Learning with MakeLearning Fun!</h1>
       <Link to="/signup" >
-      <button type="button" class="text-white bg-purple-700 hover:bg-purple-800 focus:outline-none 
+      <button type="button" className="text-white bg-purple-700 hover:bg-purple-800 focus:outline-none 
       focus:ring-4 focus:ring-purple-300 font-medium rounded-full text-xl text-gray-200 px-5 py-2.5 text-center mb-2
        dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 w-64 h-14">
         Get Started

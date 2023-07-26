@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { addFlashcard } from '../firebase/CrudFlashcards';
 
 type Flashcard = {
   question: string;
@@ -48,25 +49,39 @@ const FlashcardBuilder: React.FC<FlashcardBuilderProps> = ({ onResize, onClose }
     setNewCategory(e.target.value);
   };
 
-  const handleAddFlashcard = () => {
+  const handleAddFlashcard = async () => {
     if (!question || !answer || !selectedCategory) {
       return;
     }
-
-    const newCategories = [...categories];
-    const categoryIndex = newCategories.findIndex(
-      (category) => category.title === selectedCategory
-    );
-
-    if (categoryIndex === -1) {
-      return;
+  
+    const newFlashcard = {
+      id: `${Date.now()}-${Math.random()}`, // Generate a unique ID for the flashcard
+      userId: 'SuipCIUgW6ZqjBImBKtAlb4pcqz1', // Replace with the actual user ID
+      category: selectedCategory,
+      question : question,
+      answer : answer,
+    };
+  
+    try {
+      await addFlashcard(newFlashcard);
+      const updatedCategories = [...categories];
+      const categoryIndex = updatedCategories.findIndex(
+        (category) => category.title === selectedCategory
+      );
+  
+      if (categoryIndex === -1) {
+        return;
+      }
+  
+      updatedCategories[categoryIndex].flashcards.push(newFlashcard);
+      setCategories(updatedCategories);
+      setQuestion('');
+      setAnswer('');
+    } catch (error) {
+      console.error('Error adding flashcard:', error);
     }
-
-    newCategories[categoryIndex].flashcards.push({ question, answer });
-    setCategories(newCategories);
-    setQuestion('');
-    setAnswer('');
   };
+  
 
   const handleAddCategory = () => {
     if (!newCategory) {

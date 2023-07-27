@@ -7,7 +7,8 @@ import HomePage from './pages/HomePage.tsx';
 import SignupPage from './pages/SignupPage.tsx';
 import LoginPage from './pages/LoginPage.tsx';
 import LoadingPage from './pages/LoadingPage.tsx';
-import DisplayFlashcards from './components/firebase/DisplayFlashcards.tsx';
+import DisplayFlashcards from './components/Study/DisplayFlashcards.tsx';
+import { AuthProvider } from './components/Authentication/AuthProvider.tsx';
 
 const router = createBrowserRouter([
   { 
@@ -32,7 +33,7 @@ const router = createBrowserRouter([
   },
   {
     path : "/displayflashcards",
-    element: <DisplayFlashcards userId='SuipCIUgW6ZqjBImBKtAlb4pcqz1' category={undefined} />,
+    element: <DisplayFlashcards userId={undefined} category={undefined} />,
   }
 ])
 
@@ -40,6 +41,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
+  <AuthProvider>
     <RouterProvider router={router} />
+  </AuthProvider>
   </React.StrictMode>,
 )

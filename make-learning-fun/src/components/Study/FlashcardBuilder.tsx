@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { addFlashcard } from '../firebase/CrudFlashcards';
+import React, { useEffect, useRef, useState,useContext } from 'react';
+import { addFlashcard } from './CrudFlashcards';
+import { AuthContext } from '../../components/Authentication/AuthProvider'
 
 type Flashcard = {
   question: string;
@@ -17,6 +18,9 @@ type FlashcardBuilderProps = {
 };
 
 const FlashcardBuilder: React.FC<FlashcardBuilderProps> = ({ onResize, onClose }) => {
+  const { user } = useContext(AuthContext);
+  console.log(user);
+
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -55,8 +59,8 @@ const FlashcardBuilder: React.FC<FlashcardBuilderProps> = ({ onResize, onClose }
     }
   
     const newFlashcard = {
-      id: `${Date.now()}-${Math.random()}`, // Generate a unique ID for the flashcard
-      userId: 'SuipCIUgW6ZqjBImBKtAlb4pcqz1', // Replace with the actual user ID
+      id: `${Date.now()}-${Math.random()}`, 
+      userId: user.uid, 
       category: selectedCategory,
       question : question,
       answer : answer,
@@ -169,7 +173,7 @@ const FlashcardBuilder: React.FC<FlashcardBuilderProps> = ({ onResize, onClose }
           </button>
         </div>
       </div>
-      <div>
+      {/* <div>
         {categories.map((category) => (
           <div key={category.title} className="mb-4">
             <h3 className="font-bold">{category.title}</h3>
@@ -183,7 +187,7 @@ const FlashcardBuilder: React.FC<FlashcardBuilderProps> = ({ onResize, onClose }
             </ul>
           </div>
         ))}
-      </div>
+      </div> */}
     </div>
   );
 };

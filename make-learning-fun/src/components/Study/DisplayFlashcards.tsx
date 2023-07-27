@@ -13,16 +13,16 @@ const DisplayFlashcards = ({ userId, category }) => {
             setFlashcards(cards);
         }
 
-        fetchFlashcards();
+        void fetchFlashcards();
     }, [userId, category]);
 
-    const handleDelete = async (id) => {
+    const handleDelete = async (id: string) => {
         await deleteFlashcard(id);
         // Update local state
         setFlashcards(flashcards.filter(flashcard => flashcard.id !== id));
     }
 
-    const handleUpdate = async (id, updatedFlashcard) => {
+    const handleUpdate = async (id: string, updatedFlashcard: never) => {
         await updateFlashcard(id, updatedFlashcard);
         // Update local state
         setFlashcards(flashcards.map(flashcard => flashcard.id === id ? updatedFlashcard : flashcard));

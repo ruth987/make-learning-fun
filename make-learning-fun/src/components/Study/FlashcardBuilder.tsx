@@ -1,16 +1,7 @@
-import React, { useEffect, useRef, useState,useContext } from 'react';
+import React, { useEffect, useRef, useState, useContext } from 'react';
 import { addFlashcard } from './CrudFlashcards';
-import { AuthContext } from '../../components/Authentication/AuthProvider'
-
-type Flashcard = {
-  question: string;
-  answer: string;
-};
-
-type Category = {
-  title: string;
-  flashcards: Flashcard[];
-};
+import { getCategoriesByUser, db, Category, Flashcard, addCategory } from '../../fireStudy';
+import { AuthContext } from '../../components/Authentication/AuthProvider';
 
 type FlashcardBuilderProps = {
   onResize: (width: number) => void;
@@ -19,7 +10,6 @@ type FlashcardBuilderProps = {
 
 const FlashcardBuilder: React.FC<FlashcardBuilderProps> = ({ onResize, onClose }) => {
   const { user } = useContext(AuthContext);
-  console.log(user);
 
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
@@ -28,6 +18,23 @@ const FlashcardBuilder: React.FC<FlashcardBuilderProps> = ({ onResize, onClose }
   const [newCategory, setNewCategory] = useState('');
   const [builderWidth, setBuilderWidth] = useState(0);
   const builderRef = useRef<HTMLDivElement>(null);
+  const newCategoryObj = { title: newCategory, flashcards: [], userId: user?.uid || '' };
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        if (user) {
+          const userCategories = await getCategoriesByUser(user.uid);
+          setCategories(userCategories);
+          console.log('Categories:', userCategories);
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, [user]);
 
   useEffect(() => {
     if (builderRef.current) {
@@ -52,18 +59,19 @@ const FlashcardBuilder: React.FC<FlashcardBuilderProps> = ({ onResize, onClose }
   const handleNewCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewCategory(e.target.value);
   };
+  TODO: //check the add flashcard function
 
   const handleAddFlashcard = async () => {
     if (!question || !answer || !selectedCategory) {
       return;
     }
   
-    const newFlashcard = {
-      id: `${Date.now()}-${Math.random()}`, 
-      userId: user.uid, 
+    const newFlashcard: Flashcard = {
+      id: `${Date.now()}-${Math.random()}`,
+      userId: user?.uid || '',
       category: selectedCategory,
-      question : question,
-      answer : answer,
+      question: question,
+      answer: answer,
     };
   
     try {
@@ -81,21 +89,30 @@ const FlashcardBuilder: React.FC<FlashcardBuilderProps> = ({ onResize, onClose }
       setCategories(updatedCategories);
       setQuestion('');
       setAnswer('');
+      setSelectedCategory(''); // Reset the selected category
     } catch (error) {
       console.error('Error adding flashcard:', error);
     }
   };
-  
+  TODO: //check the add category function
+  const handleAddCategory = async () => {
 
-  const handleAddCategory = () => {
     if (!newCategory) {
       return;
     }
-
-    const newCategories = [...categories, { title: newCategory, flashcards: [] }];
-    setCategories(newCategories);
-    setNewCategory('');
+  
+    const newCategoryObj = { title: newCategory, flashcards: [] };
+    
+    try {
+      await addCategory(newCategoryObj);
+      const newCategories = [...categories, newCategoryObj];
+      setCategories(newCategories);
+      setNewCategory('');
+    } catch (error) {
+      console.error("Error adding new category: ", error);
+    }
   };
+  
 
   return (
     <div className="bg-white border border-gray-300 rounded-lg p-4" ref={builderRef}>

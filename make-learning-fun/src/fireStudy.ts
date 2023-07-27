@@ -1,36 +1,73 @@
-import firebase from 'firebase/app';
-import 'firebase/firestore';
-import { Category, Flashcard } from './types'; // Replace './types' with the path to your type definitions
+import { initializeApp } from "firebase/app";
+import {
+  GoogleAuthProvider,
+  getAuth,
+} from "firebase/auth";
+import {
+  getFirestore,
+  query,
+  getDocs,
+  collection,
+  where,
+  addDoc
+} from "firebase/firestore";
 
-// Initialize Firebase with your configuration
 const firebaseConfig = {
-  apiKey: 'YOUR_API_KEY',
-  authDomain: 'YOUR_AUTH_DOMAIN',
-  projectId: 'YOUR_PROJECT_ID',
-  storageBucket: 'YOUR_STORAGE_BUCKET',
-  messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-  appId: 'YOUR_APP_ID',
-};
+    apiKey: "AIzaSyAqL5KGTV3Q6q-V1dI9JdrB7deH8HDkHJ8",
+    authDomain: "make-learning-fun.firebaseapp.com",
+    projectId: "make-learning-fun",
+    storageBucket: "make-learning-fun.appspot.com",
+    messagingSenderId: "388387807678",
+    appId: "1:388387807678:web:cbc6b5b3d1089fdc4c59ef"
+  };
 
-// Check if Firebase is already initialized before initializing it again
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const googleProvider = new GoogleAuthProvider();
 
-const db = firebase.firestore();
+
+type Flashcard = {
+    question: string;
+    answer: string;
+    userId: string;
+    id: string;
+    category: string;
+  };
+
+type Category = {
+    title: string;
+    flashcards: Flashcard[];
+    userId: string;
+  };
+
 
 const getCategoriesByUser = async (userId: string): Promise<Category[]> => {
   try {
-    const categoriesSnapshot = await db.collection('categories').where('userId', '==', userId).get();
-    const categories: Category[] = categoriesSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      title: doc.data().title,
-      flashcards: doc.data().flashcards || [],
-    }));
+    const q = query(collection(db, "categories"), where("userId", "==", userId));
+    const docs = await getDocs(q);
+    const categories: Category[] = [];
+    docs.forEach((doc) => {
+      const categoryData = doc.data() as Category;
+      categories.push(categoryData);
+    });
     return categories;
   } catch (error) {
-    throw new Error('Error fetching categories: ' + error.message);
+    console.error("Error fetching categories by user:", error);
+    throw error;
   }
 };
 
-export { db, getCategoriesByUser };
+
+const addCategory = async (category: Category) => {
+    const colRef = collection(db, "categories");
+    const docRef = await addDoc(colRef, category);
+    return docRef;
+  };
+
+export {
+  auth,
+  db,
+  getCategoriesByUser, 
+    addCategory,
+};
